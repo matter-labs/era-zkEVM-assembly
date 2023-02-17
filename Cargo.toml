@@ -21,6 +21,6 @@ hex = "0.4"
 num-bigint = "0.4"
 num-traits = "0.2"
 lazy_static = "1.4"
-zkevm_opcode_defs = { git = "https://github.com/matter-labs/zkevm_opcode_defs.git", branch = "v1.3.1" }
+zkevm_opcode_defs = { git = "https://github.com/matter-labs/era-zkevm_opcode_defs.git", branch = "main" }
 # zkevm_opcode_defs = {path = "../zkevm_opcode_defs"}
 smallvec = "*"
