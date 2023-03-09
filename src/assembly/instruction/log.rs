@@ -43,11 +43,7 @@ impl Log {
             &[marker_register_operand()],
         )?;
 
-        let is_initial = if modifiers.remove("first") {
-            true
-        } else {
-            false
-        };
+        let is_initial = modifiers.remove("first");
 
         if modifiers.is_empty() {
             return Err(InstructionReadError::InvalidArgument {

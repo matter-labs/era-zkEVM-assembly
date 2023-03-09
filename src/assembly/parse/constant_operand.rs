@@ -39,16 +39,12 @@ pub(crate) fn parse_constant_operand<'a>(input: &'a str) -> IResult<&str, FullOp
 
         let (_, operand) = parse_relative_addressing(addressing, mode)?;
         match operand {
-            FullOperand::Full(operand) => {
-                let operand = FullOperand::Constant(ConstantOperand {
-                    label: label.to_owned(),
-                    register: operand.register,
-                    immediate: operand.immediate,
-                });
-
-                operand
-            }
-            a @ _ => {
+            FullOperand::Full(operand) => FullOperand::Constant(ConstantOperand {
+                label: label.to_owned(),
+                register: operand.register,
+                immediate: operand.immediate,
+            }),
+            a => {
                 panic!(
                     "unsupported operand {:?} for addressing {:?} and code label {}",
                     a, addressing, label

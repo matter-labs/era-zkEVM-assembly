@@ -135,10 +135,8 @@ fn parse_cell<'a>(input: &'a str) -> IResult<&str, BigUint> {
     if let Some(v) = may_be_split_prefix(value, "-") {
         value = v;
         is_negative = true;
-    } else {
-        if let Some(v) = may_be_split_prefix(value, "+") {
-            value = v;
-        }
+    } else if let Some(v) = may_be_split_prefix(value, "+") {
+        value = v;
     }
 
     let unsigned = BigUint::from_str_radix(value, 10);

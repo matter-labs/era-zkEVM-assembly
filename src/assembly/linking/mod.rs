@@ -6,8 +6,8 @@ use super::*;
 use crate::assembly::constants::*;
 use crate::assembly::section::*;
 
-pub const DEFAULT_UNWIND_LABEL: &'static str = "DEFAULT_UNWIND";
-const DEFAULT_UNWIND_LANDING_PAD_ASSEMBLY: &'static str = "ret.panic.to_label r0, @DEFAULT_UNWIND";
+pub const DEFAULT_UNWIND_LABEL: &str = "DEFAULT_UNWIND";
+const DEFAULT_UNWIND_LANDING_PAD_ASSEMBLY: &str = "ret.panic.to_label r0, @DEFAULT_UNWIND";
 
 lazy_static::lazy_static! {
     pub(crate) static ref DEFAULT_UNWIND_LANDING_PAD_INSTURUCTION_ASSEMBLY: Instruction = {
@@ -15,9 +15,8 @@ lazy_static::lazy_static! {
     };
 }
 
-pub const DEFAULT_FAR_RETURN_LABEL: &'static str = "DEFAULT_FAR_RETURN";
-const DEFAULT_FAR_RETURN_LANDING_PAD_ASSEMBLY: &'static str =
-    "ret.ok.to_label r1, @DEFAULT_FAR_RETURN";
+pub const DEFAULT_FAR_RETURN_LABEL: &str = "DEFAULT_FAR_RETURN";
+const DEFAULT_FAR_RETURN_LANDING_PAD_ASSEMBLY: &str = "ret.ok.to_label r1, @DEFAULT_FAR_RETURN";
 
 lazy_static::lazy_static! {
     pub(crate) static ref DEFAULT_FAR_RETURN_LANDING_PAD_INSTURUCTION_ASSEMBLY: Instruction = {
@@ -25,9 +24,8 @@ lazy_static::lazy_static! {
     };
 }
 
-pub const DEFAULT_FAR_REVERT_LABEL: &'static str = "DEFAULT_FAR_REVERT";
-const DEFAULT_FAR_REVERT_LANDING_PAD_ASSEMBLY: &'static str =
-    "ret.revert.to_label r1, @DEFAULT_FAR_REVERT";
+pub const DEFAULT_FAR_REVERT_LABEL: &str = "DEFAULT_FAR_REVERT";
+const DEFAULT_FAR_REVERT_LANDING_PAD_ASSEMBLY: &str = "ret.revert.to_label r1, @DEFAULT_FAR_REVERT";
 
 lazy_static::lazy_static! {
     pub(crate) static ref DEFAULT_FAR_REVERT_LANDING_PAD_INSTURUCTION_ASSEMBLY: Instruction = {
@@ -62,6 +60,7 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
         &self,
         sections: Vec<ParsedSection>,
         mut labels: HashSet<String>,
+        metadata_hash: [u8; 32],
     ) -> Result<
         (
             Vec<AlignedRawBytecode>,
@@ -107,7 +106,7 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
                                 assert!(labels.remove(&*label));
                                 globals_labels_to_offset.insert(label.clone(), offset);
                                 for (sub_idx, constant) in content.into_iter().enumerate() {
-                                    if constant.is_empty() == false {
+                                    if !constant.is_empty() {
                                         non_trivial_initializers.push((
                                             label.clone(),
                                             sub_idx,
@@ -124,7 +123,7 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
             }
         }
 
-        if aligned_globals_values.len() != 0 {
+        if !aligned_globals_values.is_empty() {
             use crate::assembly::parse::code_element::parse_code_element;
             let asm_line = format!("nop r0, r0, stack+=[{}], r0", aligned_globals_values.len());
             let opcode = parse_code_element(&asm_line).unwrap();
@@ -331,13 +330,17 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
             result.push(raw);
         }
 
-        // we need to have full code length to be even number of words, so we add one more constant
-        if result.len() % 2 != 1 {
+        // we need to have full code length to be odd number of words, so we add one more constant
+        if result.len() % 2 == 1 {
             let raw = AlignedRawBytecode::Data(ConstantValue::Cell([0u8; 32]));
             result.push(raw);
         }
 
-        assert!(result.len() % 2 == 1);
+        // insert the contract metadata hash
+        let raw = AlignedRawBytecode::Data(ConstantValue::Cell(metadata_hash));
+        result.push(raw);
+
+        assert_eq!(result.len() % 2, 1);
 
         Ok((result, pc_to_line_mapping, function_labels_to_pc))
     }

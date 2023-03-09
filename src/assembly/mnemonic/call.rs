@@ -17,7 +17,7 @@ pub(crate) fn parse_shorthand_ret(input: &str) -> IResult<&str, String> {
 
 pub(crate) fn parse_shorthand_revert(input: &str) -> IResult<&str, String> {
     let (rest, (_, _)) = parse_mnemonic(input, "revert", 0)?;
-    let canonical = format!("ret.revert r1");
+    let canonical = "ret.revert r1".to_string();
 
     Ok((rest, canonical))
 }

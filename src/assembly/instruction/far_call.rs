@@ -53,17 +53,9 @@ impl FarCall {
         let src0 = operands[0].clone().as_register_operand(0)?;
         let src1 = operands[1].clone().as_register_operand(1)?;
 
-        let is_static = if modifiers.remove("static") {
-            true
-        } else {
-            false
-        };
+        let is_static = modifiers.remove("static");
 
-        let is_call_shard = if modifiers.remove("shard") {
-            true
-        } else {
-            false
-        };
+        let is_call_shard = modifiers.remove("shard");
 
         let condition = pick_condition(&mut modifiers)?;
 

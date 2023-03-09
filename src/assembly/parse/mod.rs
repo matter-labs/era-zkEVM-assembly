@@ -88,7 +88,7 @@ pub(crate) fn split_into_sections<'a>(
 
     // split into sections, and trim comments
     for (step, line) in lines_with_numbers.clone().enumerate() {
-        let without_comment = line.line.split(";").next().unwrap();
+        let without_comment = line.line.split(';').next().unwrap();
 
         if parse_rodata_section(without_comment).is_ok() {
             if let Some(current_section) = current_unparsed_section.take() {
@@ -142,18 +142,16 @@ pub(crate) fn split_into_sections<'a>(
             if let Some((current_section, labels_in_section)) = current_unparsed_section.as_mut() {
                 let new_label = UnparsedLabel {
                     section_type: current_section.section_type,
-                    label: label,
+                    label,
                     start: step,
                     end: step + 1,
                 };
 
                 labels_in_section.push(new_label);
             }
-        } else {
-            if let Some((_, labels_in_section)) = current_unparsed_section.as_mut() {
-                if let Some(current_label) = labels_in_section.last_mut() {
-                    current_label.end += 1;
-                }
+        } else if let Some((_, labels_in_section)) = current_unparsed_section.as_mut() {
+            if let Some(current_label) = labels_in_section.last_mut() {
+                current_label.end += 1;
             }
         }
     }
@@ -218,7 +216,7 @@ pub(crate) fn parse_sections<'a>(
                 'lines: for _ in 0..(label.start - this_line) {
                     let (line_number, line) = lines_iter.next().unwrap();
                     let line = line.line.trim_start();
-                    let without_comment = line.split(";").next().unwrap();
+                    let without_comment = line.split(';').next().unwrap();
                     assert_eq!(this_line, line_number);
                     this_line += 1;
                     if without_comment.is_empty() {
@@ -245,7 +243,7 @@ pub(crate) fn parse_sections<'a>(
                                     // tmp_data_section.elements.push(section_element);
                                 }
                                 Err(e) => {
-                                    if without_comment.starts_with(".") {
+                                    if without_comment.starts_with('.') {
                                         // some remnant section
                                     } else {
                                         all_data_section_errors
@@ -274,7 +272,7 @@ pub(crate) fn parse_sections<'a>(
                                     // tmp_globals_section.elements.push(section_element);
                                 }
                                 Err(e) => {
-                                    if without_comment.starts_with(".") {
+                                    if without_comment.starts_with('.') {
                                         // some remnant section
                                     } else {
                                         all_globals_section_errors
@@ -295,7 +293,7 @@ pub(crate) fn parse_sections<'a>(
                                     tmp_text_section.elements.push(section_element);
                                 }
                                 Err(e) => {
-                                    if without_comment.starts_with(".") {
+                                    if without_comment.starts_with('.') {
                                         // some remnant section
                                     } else {
                                         all_text_section_errors
@@ -321,7 +319,7 @@ pub(crate) fn parse_sections<'a>(
             for _ in 0..(label.end - this_line) {
                 let (line_number, line) = lines_iter.next().unwrap();
                 let line = line.line.trim_start();
-                let without_comment = line.split(";").next().unwrap();
+                let without_comment = line.split(';').next().unwrap();
                 assert_eq!(this_line, line_number);
                 this_line += 1;
                 if without_comment.is_empty() {
@@ -335,7 +333,7 @@ pub(crate) fn parse_sections<'a>(
                                 labeled_data_tmp_content.extend(constants);
                             }
                             Err(e) => {
-                                if without_comment.starts_with(".") {
+                                if without_comment.starts_with('.') {
                                     // some remnant section
                                 } else {
                                     all_data_section_errors
@@ -350,7 +348,7 @@ pub(crate) fn parse_sections<'a>(
                                 labeled_globals_tmp_content.extend(constants);
                             }
                             Err(e) => {
-                                if without_comment.starts_with(".") {
+                                if without_comment.starts_with('.') {
                                     // some remnant section
                                 } else {
                                     all_globals_section_errors
@@ -369,7 +367,7 @@ pub(crate) fn parse_sections<'a>(
                                 labeled_text_tmp_content.push(code_element);
                             }
                             Err(e) => {
-                                if without_comment.starts_with(".") {
+                                if without_comment.starts_with('.') {
                                     // some remnant section
                                 } else {
                                     all_text_section_errors
@@ -479,7 +477,7 @@ pub(crate) fn parse_sections<'a>(
 pub(crate) mod test {
     use super::*;
 
-    pub(crate) const TEST_ASSEMBLY_0: &'static str = r#"
+    pub(crate) const TEST_ASSEMBLY_0: &str = r#"
     .text
     .file    "fib.ll"
     .data

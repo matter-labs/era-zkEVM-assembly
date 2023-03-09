@@ -65,11 +65,7 @@ impl Ret {
             result = Some(RetOpcode::Ok);
         }
 
-        let is_to_label = if modifiers.remove("to_label") {
-            true
-        } else {
-            false
-        };
+        let is_to_label = modifiers.remove("to_label");
 
         let (src0, label) = if !is_to_label {
             let operands =

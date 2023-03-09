@@ -53,7 +53,7 @@ pub mod sub;
 pub mod uma;
 pub mod utils;
 
-pub(crate) const ALL_CANONICAL_OPCODES: [&'static str; 16] = [
+pub(crate) const ALL_CANONICAL_OPCODES: [&str; 16] = [
     "invalid",
     "nop",
     "add",
@@ -287,7 +287,7 @@ pub(crate) fn link_operand<const N: usize, E: VmEncodingMode<N>>(
                     register.is_void(),
                     "jumps can not have registers in labels addressing"
                 );
-                if !(pc <= (E::PcOrImm::max()).as_u64() as usize) {
+                if pc > (E::PcOrImm::max()).as_u64() as usize {
                     return Err(AssemblyParseError::CodeIsTooLong(
                         pc,
                         label,
@@ -300,28 +300,26 @@ pub(crate) fn link_operand<const N: usize, E: VmEncodingMode<N>>(
                     register: RegisterOperand::Null,
                     immediate: pc as u64,
                 });
-            } else {
-                if let Some(offset) = constant_labels_to_offset.get(&*label).copied() {
-                    if !(offset <= (E::PcOrImm::max()).as_u64() as usize) {
-                        return Err(AssemblyParseError::CodeIsTooLong(
-                            offset,
-                            label,
-                            (E::PcOrImm::max()).as_u64(),
-                        ));
-                    }
-                    // assert!(offset <= Offset::MAX as usize, "offset overflow in linker");
-                    let imm = E::PcOrImm::from_u64_clipped(immediate)
-                        .wrapping_add(E::PcOrImm::from_u64_clipped(offset as u64))
-                        .as_u64();
-
-                    *operand = FullOperand::Full(GenericOperand {
-                        r#type: ImmMemHandlerFlags::UseCodePage,
-                        register,
-                        immediate: imm,
-                    });
-                } else {
-                    return Err(AssemblyParseError::LabelNotFound(label.to_owned()));
+            } else if let Some(offset) = constant_labels_to_offset.get(&*label).copied() {
+                if offset > (E::PcOrImm::max()).as_u64() as usize {
+                    return Err(AssemblyParseError::CodeIsTooLong(
+                        offset,
+                        label,
+                        (E::PcOrImm::max()).as_u64(),
+                    ));
                 }
+                // assert!(offset <= Offset::MAX as usize, "offset overflow in linker");
+                let imm = E::PcOrImm::from_u64_clipped(immediate)
+                    .wrapping_add(E::PcOrImm::from_u64_clipped(offset as u64))
+                    .as_u64();
+
+                *operand = FullOperand::Full(GenericOperand {
+                    r#type: ImmMemHandlerFlags::UseCodePage,
+                    register,
+                    immediate: imm,
+                });
+            } else {
+                return Err(AssemblyParseError::LabelNotFound(label.to_owned()));
             }
         }
         FullOperand::GlobalVariable(GlobalVariable {
@@ -330,7 +328,7 @@ pub(crate) fn link_operand<const N: usize, E: VmEncodingMode<N>>(
             immediate,
         }) => {
             if let Some(offset) = globals_to_offsets.get(&*label).copied() {
-                if !(offset <= (E::PcOrImm::max()).as_u64() as usize) {
+                if offset > (E::PcOrImm::max()).as_u64() as usize {
                     return Err(AssemblyParseError::CodeIsTooLong(
                         offset,
                         label,
@@ -440,7 +438,7 @@ pub fn set_src_non_memory_operand<const N: usize, E: VmEncodingMode<N>>(
             into.src0_reg_idx = idx;
             into.variant.src0_operand_type = Operand::RegOrImm(RegOrImmFlags::UseRegOnly);
             into.imm_0 = E::PcOrImm::from_u64_clipped(0);
-        },
+        }
         RegOrImmFlags::UseImm16Only => {
             assert!(idx == 0);
             into.src0_reg_idx = 0;

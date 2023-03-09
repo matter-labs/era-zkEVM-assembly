@@ -121,11 +121,7 @@ impl UMA {
             "UMA instruction contains no modifier, but should containt access type".to_owned(),
         ))?;
 
-        let increment_offset = if modifiers.remove(Self::INCREMENT_OFFSET_MODIFIER) {
-            true
-        } else {
-            false
-        };
+        let increment_offset = modifiers.remove(Self::INCREMENT_OFFSET_MODIFIER);
 
         if !modifiers.is_empty() {
             return Err(InstructionReadError::UnknownArgument(format!(
@@ -170,12 +166,12 @@ impl<const N: usize, E: VmEncodingMode<N>> TryFrom<UMA> for DecodedOpcode<N, E> 
             Operand::RegOrImm(_) => {
                 assert!(crate::get_isa_version().0 == 1);
                 set_src_non_memory_operand(&value.src_0, &mut new);
-            },
+            }
             Operand::RegOnly => {
                 let as_register = value.src_0.as_register_operand(0)?;
                 set_src0_or_dst0_register_operand(&as_register, &mut new, false);
-            },
-            _ => unreachable!()
+            }
+            _ => unreachable!(),
         }
         set_register_operand(&value.src_1, &mut new, false);
         set_src0_or_dst0_register_operand(&value.dst_0, &mut new, true);

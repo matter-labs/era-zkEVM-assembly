@@ -98,7 +98,10 @@ pub enum InstructionReadError {
     #[error("invalid operand for location that is reg-only or imm-only: on position `{index}`: {found:?}")]
     InvalidOperandForRegImmLocation { index: usize, found: FullOperand },
     #[error("invalid operand for location that is reg-only in this version: on position `{index}`: {found:?}")]
-    InvalidRegImmInPlaceOfReg { index: usize, found: NonMemoryOperand },
+    InvalidRegImmInPlaceOfReg {
+        index: usize,
+        found: NonMemoryOperand,
+    },
     /// The invalid instruction argument.
     #[error("invalid operand for location that is label-only: on position `{index}`: {found:?}")]
     InvalidOperandForLabelLocation { index: usize, found: FullOperand },

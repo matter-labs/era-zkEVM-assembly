@@ -30,7 +30,9 @@ pub(crate) fn marker_register_operand() -> OperandType {
 }
 
 pub(crate) fn marker_non_mem_operand() -> OperandType {
-    OperandType::Definition(zkevm_opcode_defs::Operand::RegOrImm(RegOrImmFlags::UseRegOnly))
+    OperandType::Definition(zkevm_opcode_defs::Operand::RegOrImm(
+        RegOrImmFlags::UseRegOnly,
+    ))
 }
 
 #[track_caller]
@@ -58,7 +60,7 @@ pub(crate) fn parse_opcode_and_rest<'a>(input: &'a str) -> IResult<&'a str, (&'a
     let opcode = result.0;
     let arguments = "";
 
-    return Ok(("", (opcode, arguments)));
+    Ok(("", (opcode, arguments)))
 }
 
 #[track_caller]
@@ -90,15 +92,13 @@ pub(crate) fn split_arguments<'a>(input: &'a str) -> IResult<&'a str, Vec<&'a st
                 let tail = result.3;
                 results.push(body);
                 rest = tail;
+            } else if rest.is_empty() {
+                return Ok((rest, results));
             } else {
-                if rest.is_empty() {
-                    return Ok((rest, results));
-                } else {
-                    return Err(nom::Err::Error(nom::error::Error::from_error_kind(
-                        input,
-                        nom::error::ErrorKind::TooLarge,
-                    )));
-                }
+                return Err(nom::Err::Error(nom::error::Error::from_error_kind(
+                    input,
+                    nom::error::ErrorKind::TooLarge,
+                )));
             }
         } else {
             let mut parser = nom::sequence::tuple::<_, _, nom::error::Error<_>, _>((
@@ -110,15 +110,13 @@ pub(crate) fn split_arguments<'a>(input: &'a str) -> IResult<&'a str, Vec<&'a st
                 let result = result.1;
                 let body = result.1;
                 results.push(body);
+            } else if rest.is_empty() {
+                return Ok((rest, results));
             } else {
-                if rest.is_empty() {
-                    return Ok((rest, results));
-                } else {
-                    return Err(nom::Err::Error(nom::error::Error::from_error_kind(
-                        input,
-                        nom::error::ErrorKind::TooLarge,
-                    )));
-                }
+                return Err(nom::Err::Error(nom::error::Error::from_error_kind(
+                    input,
+                    nom::error::ErrorKind::TooLarge,
+                )));
             }
         }
     }
@@ -149,10 +147,10 @@ fn parse_opcode_and_modifiers<'a>(
         let opcode = result.0;
         let mods = result.1;
         for m in mods.into_iter() {
-            let m = if let Some(m) = m.strip_suffix(".") {
+            let m = if let Some(m) = m.strip_suffix('.') {
                 m
             } else {
-                assert!(!m.contains("."));
+                assert!(!m.contains('.'));
 
                 m
             };
@@ -223,7 +221,7 @@ pub(crate) fn parse_canonical_operands_sequence<'a>(
                             InstructionReadError::InvalidGenericOperand(input.to_owned())
                         })?;
                         results.push(operand);
-                    },
+                    }
                     zkevm_opcode_defs::Operand::RegOnly => {
                         let (_, (register, imm)) = parse_absolute_addressing_single(input)
                             .map_err(|_| {
@@ -239,7 +237,7 @@ pub(crate) fn parse_canonical_operands_sequence<'a>(
 
                         let operand = FullOperand::Register(register);
                         results.push(operand);
-                    },
+                    }
                     zkevm_opcode_defs::Operand::RegOrImm(_) => {
                         use crate::assembly::parse::addressing::parse_full_operand;
                         let (_, operand) = parse_full_operand(input).map_err(|_| {
@@ -305,7 +303,7 @@ pub(crate) fn parse_canonical_operands_sequence<'a>(
 
                         let operand = FullOperand::Register(register);
                         results.push(operand);
-                    },
+                    }
                     zkevm_opcode_defs::Operand::RegOrImm(_) => {
                         unreachable!()
                     }
@@ -352,6 +350,8 @@ lazy_static! {
             Box::from(parse_sstore_combinator),
             Box::from(parse_event_combinator),
             Box::from(parse_to_l1_combinator),
+            Box::from(parse_gas_left_combinator),
+            Box::from(parse_set_gas_per_pubdatagas_left_combinator),
             Box::from(parse_precompile_combinator),
             Box::from(parse_increase_sp_shorthard),
             Box::from(parse_decrease_sp_shorthard),

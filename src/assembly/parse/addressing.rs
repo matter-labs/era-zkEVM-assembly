@@ -121,7 +121,7 @@ pub(crate) fn parse_full_operand<'a>(input: &'a str) -> IResult<&'a str, FullOpe
 
                     Ok(("", operand))
                 }
-                a @ _ => {
+                a => {
                     panic!(
                         "unsupported operand {:?} for addressing {:?} and code label {}",
                         a, addressing, label
@@ -338,7 +338,7 @@ pub(crate) fn parse_absolute_addressing_from_list<'a>(
     let full_operand = if let Some(global) = global {
         let operand = GlobalVariable {
             label: global,
-            register: register,
+            register,
             immediate: imm,
         };
 
@@ -346,7 +346,7 @@ pub(crate) fn parse_absolute_addressing_from_list<'a>(
     } else {
         let operand = GenericOperand {
             r#type: operand_type,
-            register: register,
+            register,
             immediate: imm,
         };
 
@@ -453,36 +453,32 @@ pub(crate) fn parse_absolute_addressing_single<'a>(
                 )));
             }
         }
+    } else if rest.is_empty() {
+        0u64
     } else {
-        if rest.is_empty() {
-            0u64
-        } else {
-            assert!(register == RegisterOperand::Null);
+        assert!(register == RegisterOperand::Null);
 
-            // try immediate only
-            let mut imm_parser = nom::sequence::tuple::<_, _, nom::error::Error<_>, _>((
-                nom::character::complete::space0,
-                all_until1(nom::combinator::eof),
-                nom::combinator::eof,
-            ));
+        // try immediate only
+        let mut imm_parser = nom::sequence::tuple::<_, _, nom::error::Error<_>, _>((
+            nom::character::complete::space0,
+            all_until1(nom::combinator::eof),
+            nom::combinator::eof,
+        ));
 
-            let immediate = if let Ok((_, (_, body, _))) = imm_parser.parse(rest) {
-                let immediate_body = body;
+        if let Ok((_, (_, body, _))) = imm_parser.parse(rest) {
+            let immediate_body = body;
 
-                match u64::from_str_radix(immediate_body, 10) {
-                    Ok(imm) => imm,
-                    Err(_) => {
-                        return Err(nom::Err::Error(nom::error::Error::from_error_kind(
-                            rest,
-                            nom::error::ErrorKind::Digit,
-                        )));
-                    }
+            match u64::from_str_radix(immediate_body, 10) {
+                Ok(imm) => imm,
+                Err(_) => {
+                    return Err(nom::Err::Error(nom::error::Error::from_error_kind(
+                        rest,
+                        nom::error::ErrorKind::Digit,
+                    )));
                 }
-            } else {
-                0u64
-            };
-
-            immediate
+            }
+        } else {
+            0u64
         }
     };
 

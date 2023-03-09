@@ -94,13 +94,10 @@ impl NonMemoryOperand {
         index: usize,
     ) -> Result<RegisterOperand, InstructionReadError> {
         match self.r#type {
-            RegOrImmFlags::UseRegOnly  => {
-                Ok(self.register)
-            },
-            RegOrImmFlags::UseImm16Only => Err(InstructionReadError::InvalidRegImmInPlaceOfReg {
-                index,
-                found: self,
-            }),
+            RegOrImmFlags::UseRegOnly => Ok(self.register),
+            RegOrImmFlags::UseImm16Only => {
+                Err(InstructionReadError::InvalidRegImmInPlaceOfReg { index, found: self })
+            }
         }
     }
 }
@@ -382,10 +379,10 @@ impl GenericOperand {
                     r#type: RegOrImmFlags::UseRegOnly,
                     immediate: 0,
                 }
-            },
+            }
             ImmMemHandlerFlags::UseImm16Only => {
                 match self.register {
-                    RegisterOperand::Null => {},
+                    RegisterOperand::Null => {}
                     _ => {
                         panic!("Register must be zero")
                     }
@@ -395,7 +392,7 @@ impl GenericOperand {
                     r#type: RegOrImmFlags::UseImm16Only,
                     immediate: self.immediate,
                 }
-            },
+            }
             _ => {
                 panic!("Invalid reg/imm operand")
             }

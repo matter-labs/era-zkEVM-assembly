@@ -31,6 +31,7 @@ use zkevm_opcode_defs::{Condition, DecodedOpcode, INVALID_OPCODE_VARIANT};
 use nom::multi::many0_count;
 use nom::{IResult, Parser};
 use regex::internal::Input;
+use sha3::Digest;
 
 use self::operand::FullOperand;
 
@@ -135,7 +136,7 @@ pub(crate) fn try_parse_opcode_and_modifiers(
                 .parse(opcode_body)
                 .map_err(|_| InstructionReadError::UnexpectedInstruction(input.to_owned()))?;
             let garbage = result.0;
-            if garbage.len() != 0 {
+            if !garbage.is_empty() {
                 return Err(InstructionReadError::UnexpectedInstruction(
                     input.to_owned(),
                 ));
@@ -160,6 +161,8 @@ use zkevm_opcode_defs::decoding::{EncodingModeTesting, VmEncodingMode};
 ///
 #[derive(Debug, Clone)]
 pub struct Assembly {
+    /// The contract metadata hash.
+    pub metadata_hash: [u8; 32],
     /// The instructions vector.
     pub bytecode: Vec<AlignedRawBytecode>,
     pub pc_line_mapping: HashMap<usize, usize>,
@@ -194,10 +197,14 @@ impl Assembly {
         use crate::assembly::linking::Linker;
         let linker = Linker::<N, E>::new();
 
-        if self.bytecode.len() == 0 {
+        if self.bytecode.is_empty() {
             let (unpacked_bytecode, pc_line_mapping, function_labels) = linker
-                .link(self.parsed_sections.clone(), self.labels.clone())
-                .map_err(|e| InstructionReadError::AssemblyParseError(e))?;
+                .link(
+                    self.parsed_sections.clone(),
+                    self.labels.clone(),
+                    self.metadata_hash,
+                )
+                .map_err(InstructionReadError::AssemblyParseError)?;
 
             self.bytecode = unpacked_bytecode;
             self.pc_line_mapping = pc_line_mapping;
@@ -290,7 +297,7 @@ impl Assembly {
         Ok(result)
     }
 
-    pub fn from_string(input: String) -> Result<Self, AssemblyParseError> {
+    pub fn from_string(input: String, metadata_hash: [u8; 32]) -> Result<Self, AssemblyParseError> {
         use crate::assembly::parse::*;
         let newline = ['\r', '\n'];
         let text = input.trim_matches(&newline[..]);
@@ -299,6 +306,7 @@ impl Assembly {
         let (_, sections, labels) = parse_sections(a, b)?;
 
         let new = Self {
+            metadata_hash,
             bytecode: vec![],
             assembly_code: text.to_owned(),
             pc_line_mapping: HashMap::new(),
@@ -344,7 +352,8 @@ impl TryFrom<String> for Assembly {
     type Error = AssemblyParseError;
 
     fn try_from(input: String) -> Result<Self, Self::Error> {
-        Self::from_string(input)
+        let metadata_hash = sha3::Keccak256::digest(input.as_bytes()).into();
+        Self::from_string(input, metadata_hash)
     }
 }
 
@@ -373,7 +382,7 @@ mod test {
         let _ = assembly.compile_to_bytecode().unwrap();
     }
 
-    const TMP: &'static str = r#".text
+    const TMP: &str = r#".text
         .file   "Test_26"
         .rodata.cst32
         .p2align        5

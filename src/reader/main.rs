@@ -26,7 +26,7 @@ fn main() {
 
     let mut pretty_bytecode = String::with_capacity((64 + 2) * serialized.len() + 100);
     for el in serialized.into_iter() {
-        std::fmt::write(&mut pretty_bytecode, format_args!("{}", hex::encode(&el)))
+        std::fmt::write(&mut pretty_bytecode, format_args!("{}", hex::encode(el)))
             .expect("Error occurred while trying to write in String");
     }
 

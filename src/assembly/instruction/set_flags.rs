@@ -8,14 +8,8 @@ use crate::InstructionReadError;
 ///
 /// The control flow jump instruction flag.
 ///
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct SetFlags(pub bool);
-
-impl std::default::Default for SetFlags {
-    fn default() -> Self {
-        SetFlags(false)
-    }
-}
 
 impl SetFlags {
     pub const ALL_CANONICAL_MODIFIERS: [&'static str; 1] = ["set_flags"];

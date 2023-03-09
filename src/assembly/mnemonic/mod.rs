@@ -13,6 +13,7 @@ use super::SimplifyNomError;
 
 mod binop;
 mod call;
+mod context;
 mod log;
 mod nop;
 mod set_flags;
@@ -21,6 +22,7 @@ mod uma;
 
 pub(crate) use self::binop::*;
 pub(crate) use self::call::*;
+pub(crate) use self::context::*;
 pub(crate) use self::log::*;
 pub(crate) use self::nop::*;
 pub(crate) use self::set_flags::*;
@@ -300,7 +302,7 @@ pub(crate) fn parse_set_flags_modifier<'a, 'b>(
     let (rest, result) = parser(input)?;
     let opcode = result.0;
     let params = result.1;
-    return Ok((rest, (opcode, params)));
+    Ok((rest, (opcode, params)))
 }
 
 /// Consumes until find one of the terminators. Consumes terminator too. Outputs without terminator
@@ -377,7 +379,7 @@ where
     F: nom::Parser<&'a str, &'a str, E>,
 {
     move |input: &'a str| {
-        if input.len() == 0 {
+        if input.is_empty() {
             return Err(nom::Err::Error(E::from_error_kind(
                 input,
                 nom::error::ErrorKind::Eof,
@@ -423,7 +425,7 @@ where
     move |input: &'a str| match subparser(input) {
         Ok((_, (_, rest))) => {
             let input = rest;
-            if input.len() == 0 {
+            if input.is_empty() {
                 return Err(nom::Err::Error(E::from_error_kind(
                     input,
                     nom::error::ErrorKind::Eof,
@@ -474,7 +476,7 @@ where
     move |initial_input: &'a str| match subparser(initial_input) {
         Ok((_, _)) => {
             let input = initial_input;
-            if input.len() == 0 {
+            if input.is_empty() {
                 return Err(nom::Err::Error(E::from_error_kind(
                     input,
                     nom::error::ErrorKind::Eof,
@@ -567,7 +569,7 @@ pub(crate) fn parse_ops_4(input: &str) -> IResult<&str, [&str; 4]> {
 }
 
 pub fn format_modifiers_into_canonical(modifiers: Vec<&str>) -> String {
-    if modifiers.len() == 0 {
+    if modifiers.is_empty() {
         "".to_owned()
     } else {
         format!(".{}", modifiers.join("."))

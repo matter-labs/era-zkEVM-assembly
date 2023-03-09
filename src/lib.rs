@@ -68,7 +68,10 @@ pub fn get_encoding_mode() -> RunningVmEncodingMode {
 
 pub const DEFAULT_ISA_VERSION: ISAVersion = ISAVersion(1);
 
-const _: () = if DEFAULT_ISA_VERSION.0 != zkevm_opcode_defs::DEFAULT_ISA_VERSION.0 {panic!()} else {()};
+const _: () = if DEFAULT_ISA_VERSION.0 != zkevm_opcode_defs::DEFAULT_ISA_VERSION.0 {
+    panic!()
+} else {
+};
 
 pub static ISA_VERSION_U64: AtomicU64 = AtomicU64::new(DEFAULT_ISA_VERSION.0 as u64);
 
