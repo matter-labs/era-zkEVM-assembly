@@ -162,7 +162,7 @@ use zkevm_opcode_defs::decoding::{EncodingModeTesting, VmEncodingMode};
 #[derive(Debug, Clone)]
 pub struct Assembly {
     /// The contract metadata hash.
-    pub metadata_hash: [u8; 32],
+    pub metadata_hash: Option<[u8; 32]>,
     /// The instructions vector.
     pub bytecode: Vec<AlignedRawBytecode>,
     pub pc_line_mapping: HashMap<usize, usize>,
@@ -297,7 +297,7 @@ impl Assembly {
         Ok(result)
     }
 
-    pub fn from_string(input: String, metadata_hash: [u8; 32]) -> Result<Self, AssemblyParseError> {
+    pub fn from_string(input: String, metadata_hash: Option<[u8; 32]>) -> Result<Self, AssemblyParseError> {
         use crate::assembly::parse::*;
         let newline = ['\r', '\n'];
         let text = input.trim_matches(&newline[..]);
@@ -353,7 +353,7 @@ impl TryFrom<String> for Assembly {
 
     fn try_from(input: String) -> Result<Self, Self::Error> {
         let metadata_hash = sha3::Keccak256::digest(input.as_bytes()).into();
-        Self::from_string(input, metadata_hash)
+        Self::from_string(input, Some(metadata_hash))
     }
 }
 

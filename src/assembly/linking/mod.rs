@@ -60,7 +60,7 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
         &self,
         sections: Vec<ParsedSection>,
         mut labels: HashSet<String>,
-        metadata_hash: [u8; 32],
+        metadata_hash: Option<[u8; 32]>,
     ) -> Result<
         (
             Vec<AlignedRawBytecode>,
@@ -331,14 +331,19 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
         }
 
         // we need to have full code length to be odd number of words, so we add one more constant
-        if result.len() % 2 == 1 {
+        if let Some(metadata_hash) = metadata_hash {
+            if result.len() % 2 == 1 {
+                let raw = AlignedRawBytecode::Data(ConstantValue::Cell([0u8; 32]));
+                result.push(raw);
+            }
+
+            // insert the contract metadata hash
+            let raw = AlignedRawBytecode::Data(ConstantValue::Cell(metadata_hash));
+            result.push(raw);
+        } else if result.len() % 2 != 1 {
             let raw = AlignedRawBytecode::Data(ConstantValue::Cell([0u8; 32]));
             result.push(raw);
         }
-
-        // insert the contract metadata hash
-        let raw = AlignedRawBytecode::Data(ConstantValue::Cell(metadata_hash));
-        result.push(raw);
 
         assert_eq!(result.len() % 2, 1);
 
