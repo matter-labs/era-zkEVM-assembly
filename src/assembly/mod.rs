@@ -297,7 +297,10 @@ impl Assembly {
         Ok(result)
     }
 
-    pub fn from_string(input: String, metadata_hash: Option<[u8; 32]>) -> Result<Self, AssemblyParseError> {
+    pub fn from_string(
+        input: String,
+        metadata_hash: Option<[u8; 32]>,
+    ) -> Result<Self, AssemblyParseError> {
         use crate::assembly::parse::*;
         let newline = ['\r', '\n'];
         let text = input.trim_matches(&newline[..]);

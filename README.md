@@ -1,18 +1,20 @@
-# zkEVM Assembly Tools
+# zkEVM Assembler
 
-[![Logo](eraLogo.svg)](https://zksync.io/)
+[![Logo](eraLogo.png)](https://zksync.io/)
 
-zkSync Era is a layer 2 rollup that uses zero-knowledge proofs to scale Ethereum without compromising on security or
+zkSync 2.0 is a layer 2 rollup that uses zero-knowledge proofs to scale Ethereum without compromising on security or
 decentralization. Since it's EVM compatible (Solidity/Vyper), 99% of Ethereum projects can redeploy without refactoring
-or re-auditing a single line of code. zkSync Era also uses an LLVM-based compiler that will eventually let developers
+or re-auditing a single line of code. zkSync 2.0 also uses an LLVM-based compiler that will eventually let developers
 write smart contracts in C++, Rust and other popular languages.
+
+This repo contains the zkEVM assembly tools.
 
 ## License
 
-zkSync Era is distributed under the terms of either
+The zkSync 2.0 prover is distributed under the terms of either
 
-- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
 
@@ -22,7 +24,7 @@ at your option.
 - [GitHub](https://github.com/matter-labs)
 - [Twitter](https://twitter.com/zksync)
 - [Twitter for Devs](https://twitter.com/zkSyncDevs)
-- [Discord](https://discord.gg/nMaPGrDDwk)
+- [Discord](https://join.zksync.dev/)
 
 ## Disclaimer
 
