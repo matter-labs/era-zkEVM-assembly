@@ -1,7 +1,5 @@
 use super::*;
 
-use zkevm_opcode_defs::definitions::binop::*;
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Bitwise {
     /// Condition for execution

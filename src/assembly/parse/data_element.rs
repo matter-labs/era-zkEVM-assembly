@@ -1,12 +1,6 @@
-use zkevm_opcode_defs::ImmMemHandlerFlags;
-
-use super::addressing::parse_relative_addressing;
 use super::*;
 use crate::assembly::constants::*;
-use crate::assembly::mnemonic::all_from_tag_until_1_noconsume;
-use crate::assembly::mnemonic::all_until1_include_terminator;
-use crate::assembly::mnemonic::all_until_1_noconsume_inclusive;
-use crate::assembly::operand::ConstantOperand;
+
 use nom::error::ParseError;
 use num_bigint::*;
 use num_traits::*;

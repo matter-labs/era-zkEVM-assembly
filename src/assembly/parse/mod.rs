@@ -1,6 +1,5 @@
 use nom::character::streaming::space0;
 
-use super::constants::Constant;
 use super::section::*;
 use super::*;
 

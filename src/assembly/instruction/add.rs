@@ -4,7 +4,7 @@
 
 use super::*;
 use crate::assembly::operand::{FullOperand, RegisterOperand};
-use crate::error::{BinaryParseError, InstructionReadError};
+use crate::error::InstructionReadError;
 use std::collections::HashMap;
 use std::convert::TryFrom;
 

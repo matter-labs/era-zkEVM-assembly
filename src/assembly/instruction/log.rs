@@ -4,10 +4,9 @@
 
 use super::*;
 
-use crate::error::{BinaryParseError, InstructionReadError};
+use crate::error::InstructionReadError;
 use std::collections::HashMap;
-use std::convert::{TryFrom, TryInto};
-use zkevm_opcode_defs::definitions::log::*;
+use std::convert::TryFrom;
 
 ///
 /// Read value from execution context.

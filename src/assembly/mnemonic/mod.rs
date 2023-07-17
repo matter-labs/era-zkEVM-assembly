@@ -2,14 +2,10 @@
 //! The assembly operation mnemonic.
 //!
 
-use nom::combinator::complete;
 use nom::IResult;
 
-use crate::assembly::operand::{FullOperand, RegisterOperand};
 use crate::error::InstructionReadError;
 use std::convert::TryFrom;
-
-use super::SimplifyNomError;
 
 mod binop;
 mod call;

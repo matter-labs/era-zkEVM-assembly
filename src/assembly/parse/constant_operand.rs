@@ -4,7 +4,7 @@ use super::addressing::parse_relative_addressing;
 use super::*;
 use crate::assembly::mnemonic::all_from_tag_until_1_noconsume;
 use crate::assembly::mnemonic::all_until1_include_terminator;
-use crate::assembly::mnemonic::all_until_1_noconsume_inclusive;
+
 use crate::assembly::operand::ConstantOperand;
 
 pub(crate) fn parse_constant_operand<'a>(input: &'a str) -> IResult<&str, FullOperand> {

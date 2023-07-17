@@ -12,16 +12,15 @@ path = "src/reader/main.rs"
 
 [dependencies]
 log = "0.4"
-env_logger = "0.10"
+env_logger = "0.9"
 structopt = { version = "0.3", default-features = false }
 thiserror = "1.0"
-regex = "1.8"
-nom = "7.1"
+nom = "7"
 hex = "0.4"
 sha3 = "0.10"
 num-bigint = "0.4"
 num-traits = "0.2"
 lazy_static = "1.4"
+zkevm_opcode_defs = { git = "https://github.com/matter-labs/zkevm_opcode_defs.git", branch = "v1.3.2" }
+# zkevm_opcode_defs = {path = "../zkevm_opcode_defs"}
 smallvec = "*"
-
-zkevm_opcode_defs = { git = "https://github.com/matter-labs/era-zkevm_opcode_defs", branch = "v1.3.2" }

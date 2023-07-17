@@ -1,5 +1,3 @@
-use nom::error::ParseError;
-
 use super::*;
 
 pub(crate) fn parse_nop_combinator(input: &str) -> IResult<&str, String> {

@@ -1,8 +1,6 @@
 use super::*;
 
-use crate::assembly::constants::Constant;
 use crate::assembly::constants::ConstantValue;
-use std::ops::Range;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum SectionType {

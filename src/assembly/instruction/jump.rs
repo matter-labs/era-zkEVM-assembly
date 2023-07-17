@@ -4,7 +4,7 @@
 
 use super::*;
 
-use crate::error::{BinaryParseError, InstructionReadError};
+use crate::error::InstructionReadError;
 
 use std::convert::TryFrom;
 

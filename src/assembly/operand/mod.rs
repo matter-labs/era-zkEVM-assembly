@@ -4,11 +4,8 @@
 //!
 use nom::{
     self,
-    bytes::complete::{is_a, tag, take_until, take_while, take_while1, take_while_m_n},
-    character::{complete::alphanumeric1, is_digit, is_hex_digit},
-    combinator::map_res,
-    multi::{many1, many_m_n},
-    sequence::tuple,
+    bytes::complete::{tag, take_until, take_while1, take_while_m_n},
+    multi::many_m_n,
     AsChar,
 };
 
@@ -17,7 +14,6 @@ use nom::error::{Error, ErrorKind};
 use std::{convert::TryFrom, num::ParseIntError};
 
 use crate::error::InstructionReadError;
-use std::collections::HashMap;
 
 use zkevm_opcode_defs::{ImmMemHandlerFlags, RegOrImmFlags};
 

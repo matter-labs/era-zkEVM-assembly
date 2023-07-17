@@ -1,7 +1,5 @@
-use std::process::id;
-
 use super::*;
-use crate::assembly::instruction::add;
+
 use crate::assembly::mnemonic::all_from_tag_until_1_noconsume;
 use crate::assembly::mnemonic::all_until_1_noconsume_inclusive;
 use crate::assembly::operand::ConstantOperand;
@@ -672,7 +670,6 @@ mod test {
     #[test]
     fn test_uma_imm() {
         use crate::assembly::parse::code_element::parse_code_element;
-        use zkevm_opcode_defs::ISAVersion;
 
         let operand = parse_code_element("uma.heap_read 123, r0, r1, r0").unwrap();
         let _opcode: DecodedOpcode<8, EncodingModeProduction> = operand.try_into().unwrap();

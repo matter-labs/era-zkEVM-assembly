@@ -4,9 +4,8 @@
 
 use super::*;
 
-use crate::error::{BinaryParseError, InstructionReadError};
+use crate::error::InstructionReadError;
 use std::convert::TryFrom;
-use zkevm_opcode_defs::definitions::far_call::*;
 
 ///
 /// The control flow jump instruction.

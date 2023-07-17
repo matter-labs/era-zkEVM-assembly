@@ -2,7 +2,7 @@
 //! The zkEVM common library.
 //!
 
-#![allow(unused_imports, dead_code)]
+#![allow(dead_code)]
 
 #[cfg(test)]
 #[rustfmt::skip]

@@ -1,7 +1,6 @@
 use zkevm_opcode_defs::decoding::encoding_mode_production::EncodingModeProduction;
 use zkevm_opcode_defs::decoding::VmEncodingMode;
 
-use super::parse::*;
 use super::*;
 use crate::assembly::constants::*;
 use crate::assembly::section::*;

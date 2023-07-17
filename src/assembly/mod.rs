@@ -3,7 +3,7 @@
 //!
 
 use std::convert::TryInto;
-use std::hash::Hash;
+
 // pub mod bytecode;
 // pub mod data_operation;
 pub mod constants;
@@ -26,11 +26,9 @@ use std::fs;
 use std::io::Read;
 use std::path::PathBuf;
 
-use zkevm_opcode_defs::{Condition, DecodedOpcode, INVALID_OPCODE_VARIANT};
+use zkevm_opcode_defs::{Condition, DecodedOpcode};
 
-use nom::multi::many0_count;
 use nom::{IResult, Parser};
-use regex::internal::Input;
 use sha3::Digest;
 
 use self::operand::FullOperand;
@@ -150,7 +148,6 @@ pub(crate) fn try_parse_opcode_and_modifiers(
     Ok((operands_body, (opcode, mods)))
 }
 
-use crate::assembly::linking::Linker;
 use crate::assembly::section::LabeledGlobal;
 use zkevm_opcode_defs::decoding::encoding_mode_production::EncodingModeProduction;
 use zkevm_opcode_defs::decoding::{EncodingModeTesting, VmEncodingMode};
@@ -376,7 +373,7 @@ mod test {
         dbg!(res);
     }
 
-    use crate::assembly::parse::{code_element::parse_opcode_and_rest, test::TEST_ASSEMBLY_0};
+    use crate::assembly::parse::test::TEST_ASSEMBLY_0;
 
     #[test]
     fn test_simple_assembly() {

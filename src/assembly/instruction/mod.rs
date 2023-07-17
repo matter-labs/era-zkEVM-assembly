@@ -270,8 +270,6 @@ pub(crate) fn link_operand<const N: usize, E: VmEncodingMode<N>>(
     constant_labels_to_offset: &HashMap<String, usize>,
     globals_to_offsets: &HashMap<String, usize>,
 ) -> Result<(), AssemblyParseError> {
-    use zkevm_opcode_defs::decoding::AllowedPcOrImm;
-
     match operand.clone() {
         FullOperand::Constant(ConstantOperand {
             label,

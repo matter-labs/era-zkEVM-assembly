@@ -3,7 +3,7 @@
 //!
 
 use super::*;
-use crate::error::{BinaryParseError, InstructionReadError};
+use crate::error::InstructionReadError;
 use std::collections::HashMap;
 use std::convert::TryFrom;
 

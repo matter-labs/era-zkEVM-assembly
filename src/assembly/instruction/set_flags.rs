@@ -2,7 +2,6 @@
 //! Condition to apply the operation
 //!
 
-use super::*;
 use crate::InstructionReadError;
 
 ///
