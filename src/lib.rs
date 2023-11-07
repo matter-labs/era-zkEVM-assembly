@@ -66,7 +66,7 @@ pub fn get_encoding_mode() -> RunningVmEncodingMode {
     RunningVmEncodingMode::from_u64(ENCODING_MODE.load(std::sync::atomic::Ordering::Relaxed))
 }
 
-pub const DEFAULT_ISA_VERSION: ISAVersion = ISAVersion(1);
+pub const DEFAULT_ISA_VERSION: ISAVersion = ISAVersion(2);
 
 const _: () = if DEFAULT_ISA_VERSION.0 != zkevm_opcode_defs::DEFAULT_ISA_VERSION.0 {
     panic!()

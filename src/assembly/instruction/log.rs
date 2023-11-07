@@ -28,8 +28,8 @@ pub struct Log {
 }
 
 impl Log {
-    pub const ALL_CANONICAL_MODIFIERS: [&'static str; 5] =
-        ["sread", "swrite", "event", "to_l1", "precompile"];
+    pub const ALL_CANONICAL_MODIFIERS: [&'static str; 8] =
+        ["sread", "swrite", "event", "to_l1", "precompile", "decommit", "tread", "twrite"];
 
     #[track_caller]
     pub fn build_from_parts(
@@ -71,6 +71,9 @@ impl Log {
                         2 => LogOpcode::Event,
                         3 => LogOpcode::ToL1Message,
                         4 => LogOpcode::PrecompileCall,
+                        5 => LogOpcode::Decommit,
+                        6 => LogOpcode::TransientStorageRead,
+                        7 => LogOpcode::TransientStorageWrite,
                         _ => {
                             unreachable!()
                         }

@@ -64,3 +64,31 @@ mod test {
         dbg!(r);
     }
 }
+
+pub(crate) fn parse_tread_combinator(input: &str) -> IResult<&str, String> {
+    let (rest, (_, args)) = parse_mnemonic(input, "tread", 2)?;
+    let canonical = format!("log.tread {}, r0, {}", &args[0], &args[1]);
+
+    Ok((rest, canonical))
+}
+
+pub(crate) fn parse_tload_combinator(input: &str) -> IResult<&str, String> {
+    let (rest, (_, args)) = parse_mnemonic(input, "tload", 2)?;
+    let canonical = format!("log.tread {}, r0, {}", &args[0], &args[1]);
+
+    Ok((rest, canonical))
+}
+
+pub(crate) fn parse_tstore_combinator(input: &str) -> IResult<&str, String> {
+    let (rest, (_, args)) = parse_mnemonic(input, "tstore", 2)?;
+    let canonical = format!("log.twrite {}, {}, r0", &args[0], &args[1]);
+
+    Ok((rest, canonical))
+}
+
+pub(crate) fn parse_decom_combinator(input: &str) -> IResult<&str, String> {
+    let (rest, (_, args)) = parse_mnemonic(input, "decom", 2)?;
+    let canonical = format!("log.decommit {}, r0, {}", &args[0], &args[1]);
+
+    Ok((rest, canonical))
+}

@@ -81,8 +81,8 @@ impl Context {
                         i if i == ContextOpcode::SetContextU128.variant_index() => {
                             ContextOpcode::SetContextU128
                         }
-                        i if i == ContextOpcode::SetErgsPerPubdataByte.variant_index() => {
-                            ContextOpcode::SetErgsPerPubdataByte
+                        i if i == ContextOpcode::AuxMutating0.variant_index() => {
+                            ContextOpcode::AuxMutating0
                         }
                         i if i == ContextOpcode::IncrementTxNumber.variant_index() => {
                             ContextOpcode::IncrementTxNumber
@@ -110,7 +110,7 @@ impl Context {
         }
 
         let (source_location, destination_location) = match variant {
-            ContextOpcode::SetContextU128 | ContextOpcode::SetErgsPerPubdataByte => {
+            ContextOpcode::SetContextU128 | ContextOpcode::AuxMutating0 => {
                 let operands =
                     parse_canonical_operands_sequence(operands, &[], &[marker_register_operand()])?;
 
