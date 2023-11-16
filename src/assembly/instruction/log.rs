@@ -28,8 +28,16 @@ pub struct Log {
 }
 
 impl Log {
-    pub const ALL_CANONICAL_MODIFIERS: [&'static str; 8] =
-        ["sread", "swrite", "event", "to_l1", "precompile", "decommit", "tread", "twrite"];
+    pub const ALL_CANONICAL_MODIFIERS: [&'static str; 8] = [
+        "sread",
+        "swrite",
+        "event",
+        "to_l1",
+        "precompile",
+        "decommit",
+        "tread",
+        "twrite",
+    ];
 
     #[track_caller]
     pub fn build_from_parts(

@@ -163,7 +163,7 @@ impl<const N: usize, E: VmEncodingMode<N>> TryFrom<UMA> for DecodedOpcode<N, E> 
         };
         match new.variant.opcode.input_operands(crate::get_isa_version())[0] {
             Operand::RegOrImm(_) => {
-                assert!(crate::get_isa_version().0 == 1);
+                assert!(crate::get_isa_version().0 >= 1);
                 set_src_non_memory_operand(&value.src_0, &mut new);
             }
             Operand::RegOnly => {
