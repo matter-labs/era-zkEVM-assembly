@@ -87,8 +87,8 @@ pub(crate) fn parse_tstore_combinator(input: &str) -> IResult<&str, String> {
 }
 
 pub(crate) fn parse_decom_combinator(input: &str) -> IResult<&str, String> {
-    let (rest, (_, args)) = parse_mnemonic(input, "decom", 2)?;
-    let canonical = format!("log.decommit {}, r0, {}", &args[0], &args[1]);
+    let (rest, (_, args)) = parse_mnemonic(input, "decom", 3)?;
+    let canonical = format!("log.decommit {}, {}, {}", &args[0], &args[1], &args[2]);
 
     Ok((rest, canonical))
 }
