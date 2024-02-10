@@ -30,17 +30,19 @@ pub struct UMA {
 }
 
 impl UMA {
-    pub const ALL_CANONICAL_MODIFIERS: [&'static str; 5] = [
+    pub const ALL_CANONICAL_MODIFIERS: [&'static str; 7] = [
         "heap_read",
         "heap_write",
         "aux_heap_read",
         "aux_heap_write",
         "fat_ptr_read",
+        "static_memory_read",
+        "static_memory_write",
     ];
 
     pub const INCREMENT_OFFSET_MODIFIER: &'static str = "inc";
 
-    pub const ALL_SHORTHARD_MODIFIERS: [&'static str; 5] = ["rh", "wh", "rah", "wah", "rptr"];
+    pub const ALL_SHORTHARD_MODIFIERS: [&'static str; 7] = ["rh", "wh", "rah", "wah", "rptr", "rsm", "wsm",];
 
     #[track_caller]
     pub fn build_from_parts(
@@ -80,6 +82,8 @@ impl UMA {
                         2 => UMAOpcode::AuxHeapRead,
                         3 => UMAOpcode::AuxHeapWrite,
                         4 => UMAOpcode::FatPointerRead,
+                        5 => UMAOpcode::StaticMemoryRead,
+                        6 => UMAOpcode::StaticMemoryWrite,
                         _ => {
                             unreachable!()
                         }
@@ -106,6 +110,8 @@ impl UMA {
                             2 => UMAOpcode::AuxHeapRead,
                             3 => UMAOpcode::AuxHeapWrite,
                             4 => UMAOpcode::FatPointerRead,
+                            5 => UMAOpcode::StaticMemoryRead,
+                            6 => UMAOpcode::StaticMemoryWrite,
                             _ => {
                                 unreachable!()
                             }
