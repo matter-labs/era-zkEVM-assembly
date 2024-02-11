@@ -42,7 +42,8 @@ impl UMA {
 
     pub const INCREMENT_OFFSET_MODIFIER: &'static str = "inc";
 
-    pub const ALL_SHORTHARD_MODIFIERS: [&'static str; 7] = ["rh", "wh", "rah", "wah", "rptr", "rsm", "wsm",];
+    pub const ALL_SHORTHARD_MODIFIERS: [&'static str; 7] =
+        ["rh", "wh", "rah", "wah", "rptr", "rsm", "wsm"];
 
     #[track_caller]
     pub fn build_from_parts(
