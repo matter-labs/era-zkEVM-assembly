@@ -224,9 +224,7 @@ pub(crate) fn parse_sections<'a>(
                     // some unlabeled data or code
                     match section.section_type {
                         SectionType::Data => {
-                            match self::data_element::parse_data_element_as_constant(
-                                without_comment,
-                            ) {
+                            match self::data_element::parse_data_element(without_comment) {
                                 Ok(_constants) => {
                                     let err = InstructionReadError::UnexpectedConstant(
                                         without_comment.to_string(),
@@ -252,9 +250,7 @@ pub(crate) fn parse_sections<'a>(
                             }
                         }
                         SectionType::Globals => {
-                            match self::data_element::parse_data_element_as_constant(
-                                without_comment,
-                            ) {
+                            match self::data_element::parse_data_element(without_comment) {
                                 Ok(_constants) => {
                                     let err = InstructionReadError::UnexpectedConstant(
                                         without_comment.to_string(),
@@ -327,9 +323,9 @@ pub(crate) fn parse_sections<'a>(
                 // some labeled data or code
                 match section.section_type {
                     SectionType::Data => {
-                        match self::data_element::parse_data_element_as_constant(without_comment) {
-                            Ok(constants) => {
-                                labeled_data_tmp_content.extend(constants);
+                        match self::data_element::parse_data_element(without_comment) {
+                            Ok(data_elements) => {
+                                labeled_data_tmp_content.extend(data_elements);
                             }
                             Err(e) => {
                                 if without_comment.starts_with('.') {
@@ -342,9 +338,24 @@ pub(crate) fn parse_sections<'a>(
                         }
                     }
                     SectionType::Globals => {
-                        match self::data_element::parse_data_element_as_constant(without_comment) {
-                            Ok(constants) => {
-                                labeled_globals_tmp_content.extend(constants);
+                        match self::data_element::parse_data_element(without_comment) {
+                            Ok(data_elements) => {
+                                data_elements.iter().for_each(|element| match element {
+                                    DataElement::Constant(constant) => {
+                                        labeled_globals_tmp_content.push(constant.to_owned());
+                                    }
+                                    DataElement::LabelName(name) => {
+                                        all_globals_section_errors.insert(
+                                            line_number,
+                                            (
+                                                without_comment.to_owned(),
+                                                InstructionReadError::InvalidLabeledConstant(
+                                                    name.to_string(),
+                                                ),
+                                            ),
+                                        );
+                                    }
+                                });
                             }
                             Err(e) => {
                                 if without_comment.starts_with('.') {

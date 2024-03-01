@@ -5,14 +5,14 @@ use nom::error::ParseError;
 use num_bigint::*;
 use num_traits::*;
 
-pub(crate) fn parse_data_element_as_constant<'a>(
+pub(crate) fn parse_data_element<'a>(
     input: &'a str,
-) -> Result<Vec<ConstantValue>, InstructionReadError> {
+) -> Result<Vec<DataElement>, InstructionReadError> {
     // we want to parse something like `.cell integer`, or `bytes ...`
 
     for parser in ALL_DATA_PARSERS.iter() {
-        if let Ok((_, constant)) = parser(input) {
-            return Ok(constant);
+        if let Ok((_, result)) = parser(input) {
+            return Ok(result);
         }
     }
 
@@ -24,19 +24,23 @@ pub(crate) fn parse_data_element_as_constant<'a>(
 use lazy_static::lazy_static;
 
 lazy_static! {
-    pub(crate) static ref ALL_DATA_PARSERS: Vec<Box<dyn Fn(&str) -> IResult<&str, Vec<ConstantValue>> + 'static + Send + Sync>> = {
+    pub(crate) static ref ALL_DATA_PARSERS: Vec<Box<dyn Fn(&str) -> IResult<&str, Vec<DataElement>> + 'static + Send + Sync>> = {
         vec![
             Box::from(parse_cell_into_constant)
-                as Box<dyn Fn(&str) -> IResult<&str, Vec<ConstantValue>> + 'static + Send + Sync>,
+                as Box<dyn Fn(&str) -> IResult<&str, Vec<DataElement>> + 'static + Send + Sync>,
             Box::from(parse_zeroes_into_constant),
+            Box::from(parse_label_name),
         ]
     };
 }
 
-fn parse_cell_into_constant(input: &str) -> IResult<&str, Vec<ConstantValue>> {
+fn parse_cell_into_constant(input: &str) -> IResult<&str, Vec<DataElement>> {
     let (_, biguint) = parse_cell(input)?;
     if let Some(serialized) = serialize_biguint(biguint) {
-        Ok(("", vec![ConstantValue::Cell(serialized)]))
+        Ok((
+            "",
+            vec![DataElement::Constant(ConstantValue::Cell(serialized))],
+        ))
     } else {
         Err(nom::Err::Error(nom::error::Error::from_error_kind(
             input,
@@ -45,7 +49,7 @@ fn parse_cell_into_constant(input: &str) -> IResult<&str, Vec<ConstantValue>> {
     }
 }
 
-fn parse_zeroes_into_constant(input: &str) -> IResult<&str, Vec<ConstantValue>> {
+fn parse_zeroes_into_constant(input: &str) -> IResult<&str, Vec<DataElement>> {
     let (_, length) = parse_zeroes(input)?;
     if length % 32 != 0 {
         return Err(nom::Err::Error(nom::error::Error::from_error_kind(
@@ -53,7 +57,15 @@ fn parse_zeroes_into_constant(input: &str) -> IResult<&str, Vec<ConstantValue>> 
             nom::error::ErrorKind::TooLarge,
         )));
     }
-    Ok(("", vec![ConstantValue::Cell([0u8; 32]); length / 32]))
+    Ok((
+        "",
+        vec![DataElement::Constant(ConstantValue::Cell([0u8; 32])); length / 32],
+    ))
+}
+
+fn parse_label_name(input: &str) -> IResult<&str, Vec<DataElement>> {
+    let (_, label_name) = parse_name(input)?;
+    Ok(("", vec![DataElement::LabelName(label_name.to_string())]))
 }
 
 fn parse_zeroes<'a>(input: &'a str) -> IResult<&str, usize> {
@@ -147,6 +159,37 @@ fn parse_cell<'a>(input: &'a str) -> IResult<&str, BigUint> {
     }
 
     Ok(("", unsigned))
+}
+
+fn parse_name<'a>(input: &'a str) -> IResult<&str, &str> {
+    let mut parser = nom::sequence::tuple::<_, _, nom::error::Error<_>, _>((
+        nom::character::complete::space0,
+        nom::bytes::complete::tag(".cell"),
+        nom::character::complete::space1,
+        nom::bytes::complete::tag("@"),
+        all_until1(nom::branch::alt((
+            nom::combinator::eof,
+            nom::character::complete::line_ending,
+            nom::character::complete::space1,
+        ))),
+    ));
+
+    let (_, result) = parser(input)?;
+    Ok(("", result.4))
+}
+
+pub(crate) fn resolve_to_constant(
+    input: &str,
+    function_labels_to_pc: &HashMap<String, usize>,
+) -> Option<ConstantValue> {
+    function_labels_to_pc
+        .get(input)
+        .copied()
+        .map(|offset| {
+            let biguint = BigUint::from(offset);
+            serialize_biguint(biguint).map(ConstantValue::Cell)
+        })
+        .flatten()
 }
 
 #[cfg(test)]

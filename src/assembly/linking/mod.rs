@@ -71,7 +71,7 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
         let mut result = vec![];
 
         let mut aligned_code = vec![];
-        let mut aligned_constants = vec![];
+        let mut data_elements = vec![];
         let mut aligned_globals_values = vec![];
         let mut function_labels_to_pc = HashMap::new();
         let mut constant_labels_to_offset = HashMap::new();
@@ -90,11 +90,7 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
                     for el in section.elements.iter().cloned() {
                         match el {
                             GlobalsSectionElement::Unlabeled(constant) => {
-                                let ConstantElement {
-                                    source_line: _,
-                                    content_type,
-                                } = constant;
-                                aligned_globals_values.push(content_type);
+                                aligned_globals_values.push(constant);
                             }
                             GlobalsSectionElement::Labeled(LabeledGlobal {
                                 label,
@@ -136,9 +132,9 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
         // to do so we have to add some values into data section first
         for (label, in_variable_idx, constant) in non_trivial_initializers.into_iter() {
             let initializing_label = format!("_INTERNAL_INIT_{}_{}", &label, in_variable_idx);
-            let offset = aligned_constants.len();
+            let offset = data_elements.len();
             constant_labels_to_offset.insert(initializing_label.clone(), offset);
-            aligned_constants.push(constant);
+            data_elements.push(DataElement::Constant(constant));
 
             // and add the corresponding instruction
             use crate::assembly::parse::code_element::parse_code_element;
@@ -191,23 +187,19 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
                 ParsedSection::Data(section) => {
                     for el in section.elements.into_iter() {
                         match el {
-                            DataSectionElement::Unlabeled(constant) => {
-                                let ConstantElement {
-                                    source_line: _,
-                                    content_type,
-                                } = constant;
-                                aligned_constants.push(content_type);
+                            DataSectionElement::Unlabeled(element) => {
+                                data_elements.push(element);
                             }
                             DataSectionElement::Labeled(LabeledConstant {
                                 label,
                                 source_line: _,
                                 content,
                             }) => {
-                                let offset = aligned_constants.len();
+                                let offset = data_elements.len();
                                 assert!(labels.remove(&*label));
                                 constant_labels_to_offset.insert(label, offset);
-                                for constant in content.into_iter() {
-                                    aligned_constants.push(constant);
+                                for element in content.into_iter() {
+                                    data_elements.push(element);
                                 }
                             }
                         }
@@ -313,6 +305,23 @@ impl<const N: usize, E: VmEncodingMode<N>> Linker<N, E> {
                 &constant_labels_to_offset,
                 &globals_labels_to_offset,
             )?;
+        }
+
+        let mut aligned_constants = Vec::new();
+        for element in data_elements {
+            match element {
+                DataElement::Constant(value) => {
+                    aligned_constants.push(value);
+                }
+                DataElement::LabelName(name) => {
+                    use crate::assembly::parse::data_element::resolve_to_constant;
+                    if let Some(value) = resolve_to_constant(&name, &function_labels_to_pc) {
+                        aligned_constants.push(value);
+                    } else {
+                        return Err(AssemblyParseError::RelocationError(name));
+                    }
+                }
+            }
         }
 
         // pack

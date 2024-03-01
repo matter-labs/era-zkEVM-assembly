@@ -37,6 +37,8 @@ pub enum AssemblyParseError {
     DuplicateLabel(String),
     #[error("there is no label `{0}` in data section of functions")]
     LabelNotFound(String),
+    #[error("failed to resolve relocation for label `{0}` in data section")]
+    RelocationError(String),
     #[error("Label {1} was tried to be used for either PC or constant at offset {0} that is more than `{2}` addressable space")]
     CodeIsTooLong(usize, String, u64),
 }
