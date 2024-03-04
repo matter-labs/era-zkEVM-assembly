@@ -191,12 +191,11 @@ pub(crate) fn parse_relative_addressing<'a>(
             let (_, operand) = parse_absolute_addressing_from_list(addressing_mode, tmp)?;
 
             operand
-        }
-        // GenericOperand {
-        //     r#type: operand,
-        //     immediate: imm,
-        //     register: reg,
-        // },
+        } // GenericOperand {
+          //     r#type: operand,
+          //     immediate: imm,
+          //     register: reg,
+          // },
     };
 
     Ok((rest, operand))

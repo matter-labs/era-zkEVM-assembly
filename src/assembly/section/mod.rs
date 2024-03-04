@@ -66,7 +66,7 @@ pub(crate) struct DataSection {
 
 #[derive(Clone, Debug)]
 pub(crate) enum DataSectionElement {
-    Unlabeled(ConstantElement),
+    Unlabeled(DataElement),
     Labeled(LabeledConstant),
 }
 
@@ -74,13 +74,13 @@ pub(crate) enum DataSectionElement {
 pub(crate) struct LabeledConstant {
     pub(crate) label: String,
     pub(crate) source_line: usize,
-    pub(crate) content: Vec<ConstantValue>,
+    pub(crate) content: Vec<DataElement>,
 }
 
 #[derive(Clone, Debug)]
-pub(crate) struct ConstantElement {
-    pub(crate) source_line: usize,
-    pub(crate) content_type: ConstantValue,
+pub(crate) enum DataElement {
+    LabelName(String),
+    Constant(ConstantValue),
 }
 
 // Globals section can only containt named globals
@@ -91,7 +91,7 @@ pub(crate) struct GlobalsSection {
 
 #[derive(Clone, Debug)]
 pub(crate) enum GlobalsSectionElement {
-    Unlabeled(ConstantElement),
+    Unlabeled(ConstantValue),
     Labeled(LabeledGlobal),
 }
 
