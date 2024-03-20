@@ -34,7 +34,7 @@ impl Context {
         "sp",
         "get_context_u128",
         "set_context_u128",
-        "set_ergs_per_pubdata",
+        "set_aux_0",
         "inc_tx_num",
     ];
 

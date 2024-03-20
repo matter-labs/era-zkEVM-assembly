@@ -12,17 +12,17 @@ pub(crate) fn parse_gas_left_combinator(input: &str) -> IResult<&str, String> {
     Ok((rest, canonical))
 }
 
-pub(crate) fn parse_set_gas_per_pubdatagas_left_combinator(input: &str) -> IResult<&str, String> {
-    let (rest, (_, modifiers, args)) =
-        parse_mnemonic_allow_modifiers(input, "context.set_gas_per_pubdata", 1)?;
-    let canonical = format!(
-        "context.set_ergs_per_pubdata{} {}",
-        format_modifiers_into_canonical(modifiers),
-        &args[0],
-    );
+// pub(crate) fn parse_set_gas_per_pubdatagas_left_combinator(input: &str) -> IResult<&str, String> {
+//     let (rest, (_, modifiers, args)) =
+//         parse_mnemonic_allow_modifiers(input, "context.set_gas_per_pubdata", 1)?;
+//     let canonical = format!(
+//         "context.set_aux_0{} {}",
+//         format_modifiers_into_canonical(modifiers),
+//         &args[0],
+//     );
 
-    Ok((rest, canonical))
-}
+//     Ok((rest, canonical))
+// }
 
 #[cfg(test)]
 mod test {

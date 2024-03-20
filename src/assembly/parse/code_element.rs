@@ -352,7 +352,7 @@ lazy_static! {
             Box::from(parse_event_combinator),
             Box::from(parse_to_l1_combinator),
             Box::from(parse_gas_left_combinator),
-            Box::from(parse_set_gas_per_pubdatagas_left_combinator),
+            // Box::from(parse_set_gas_per_pubdatagas_left_combinator),
             Box::from(parse_precompile_combinator),
             Box::from(parse_increase_sp_shorthard),
             Box::from(parse_decrease_sp_shorthard),
