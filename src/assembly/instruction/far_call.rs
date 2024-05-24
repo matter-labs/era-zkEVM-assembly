@@ -78,6 +78,12 @@ impl FarCall {
                 }
             }
         }
+        if !modifiers.is_empty() {
+            return Err(InstructionReadError::UnknownArgument(format!(
+                "{:?}",
+                modifiers
+            )));
+        }
 
         if result.is_none() {
             // our default behavior

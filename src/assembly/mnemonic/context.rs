@@ -32,7 +32,7 @@ mod test {
     #[test]
     fn test_parse_gas_left() {
         let example = "context.gas_left r1";
-        let r = parse_gas_left_combinator(example).simplify();
+        let r = parse_gas_left_combinator(example).simplify().unwrap();
         dbg!(r);
     }
 }

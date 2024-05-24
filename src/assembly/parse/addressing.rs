@@ -667,6 +667,18 @@ mod test {
     }
 
     #[test]
+    fn test_far_call_with_invalid_modifiers() {
+        use crate::assembly::parse::code_element::parse_code_element;
+
+        let error =
+            parse_code_element("far_call.foobar r2, r3, @.BB5_2").expect_err("Should have failed");
+        assert!(
+            matches!(error, InstructionReadError::UnknownArgument(_)),
+            "Expected Uknown argument error"
+        );
+    }
+
+    #[test]
     fn test_uma_imm() {
         use crate::assembly::parse::code_element::parse_code_element;
 

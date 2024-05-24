@@ -60,7 +60,7 @@ mod test {
     #[test]
     fn test_parse_rol() {
         let example = "shl.s.set_flags r2, r3, r4";
-        let r = parse_shl_combinator(example).simplify();
+        let r = parse_shl_combinator(example).simplify().unwrap();
         dbg!(r);
     }
 }

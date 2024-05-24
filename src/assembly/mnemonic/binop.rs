@@ -69,14 +69,14 @@ mod test {
     #[test]
     fn test_parse_mov() {
         let example = "mov r2, r3";
-        let r = parse_mov_combinator(example).simplify();
+        let r = parse_mov_combinator(example).simplify().unwrap();
         dbg!(r);
     }
 
     #[test]
     fn test_parse_xor() {
         let example = "xor.s.set_flags r2, r3, r0";
-        let r = parse_xor_combinator(example).simplify();
+        let r = parse_xor_combinator(example).simplify().unwrap();
         dbg!(r);
     }
 }
