@@ -622,6 +622,8 @@ fn parse_immediate_value<'a>(input: &'a str) -> IResult<&str, u64> {
 
 #[cfg(test)]
 mod test {
+    use zkevm_opcode_defs::Opcode;
+
     use super::*;
 
     #[test]
@@ -702,5 +704,61 @@ mod test {
         dbg!(&operand);
         let opcode: DecodedOpcode<8, EncodingModeProduction> = operand.try_into().unwrap();
         dbg!(&opcode);
+
+        assert!(
+            matches!(
+                opcode.variant.opcode,
+                Opcode::UMA(zkevm_opcode_defs::UMAOpcode::HeapWrite)
+            ),
+            "wrong decode"
+        );
+    }
+
+    #[test]
+    fn test_uma_variants() {
+        use crate::assembly::parse::code_element::parse_code_element;
+
+        let operand = parse_code_element("uma.static_read 123, r0, r1, r0").unwrap();
+        let opcode: DecodedOpcode<8, EncodingModeProduction> = operand.try_into().unwrap();
+
+        assert!(
+            matches!(
+                opcode.variant.opcode,
+                Opcode::UMA(zkevm_opcode_defs::UMAOpcode::StaticMemoryRead)
+            ),
+            "wrong decode"
+        );
+
+        let operand = parse_code_element("uma.rs 123, r0, r1, r0").unwrap();
+        let opcode: DecodedOpcode<8, EncodingModeProduction> = operand.try_into().unwrap();
+
+        assert!(
+            matches!(
+                opcode.variant.opcode,
+                Opcode::UMA(zkevm_opcode_defs::UMAOpcode::StaticMemoryRead)
+            ),
+            "wrong decode"
+        );
+
+        let operand = parse_code_element("uma.static_write r2, r0, r1, r0").unwrap();
+        let opcode: DecodedOpcode<8, EncodingModeProduction> = operand.try_into().unwrap();
+        assert!(
+            matches!(
+                opcode.variant.opcode,
+                Opcode::UMA(zkevm_opcode_defs::UMAOpcode::StaticMemoryWrite)
+            ),
+            "wrong decode"
+        );
+
+        let operand = parse_code_element("uma.ws 123, r0, r1, r0").unwrap();
+        let opcode: DecodedOpcode<8, EncodingModeProduction> = operand.try_into().unwrap();
+
+        assert!(
+            matches!(
+                opcode.variant.opcode,
+                Opcode::UMA(zkevm_opcode_defs::UMAOpcode::StaticMemoryWrite)
+            ),
+            "wrong decode"
+        );
     }
 }
