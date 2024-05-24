@@ -60,7 +60,7 @@ mod test {
     #[test]
     fn test_parse_event() {
         let example = "event.first r6, r5";
-        let r = parse_event_combinator(example).simplify();
+        let r = parse_event_combinator(example).simplify().unwrap();
         dbg!(r);
     }
 }

@@ -15,14 +15,14 @@ mod test {
     #[test]
     fn test_canonicalize_set_flags() {
         let example = "add! r2, r3, r4";
-        let r = parse_set_flags_combinator(example).simplify();
+        let r = parse_set_flags_combinator(example).simplify().unwrap();
         dbg!(r);
     }
 
     #[test]
     fn test_canonicalize_set_flags2() {
         let example = "sub.s! r2, r3, r4";
-        let r = parse_set_flags_combinator(example).simplify();
+        let r = parse_set_flags_combinator(example).simplify().unwrap();
         dbg!(r);
     }
 }

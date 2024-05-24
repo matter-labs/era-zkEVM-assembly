@@ -369,7 +369,7 @@ mod test {
     fn parse_full_assembly_line() {
         let asm = "sub.s r1, r2, r3";
 
-        let res = try_parse_opcode_and_modifiers(asm);
+        let res = try_parse_opcode_and_modifiers(asm).unwrap();
         dbg!(res);
     }
 
@@ -417,7 +417,7 @@ __eh:
     fn test_parse_tmp() {
         let mut assembly = Assembly::try_from(TMP.to_owned()).unwrap();
         let _ = assembly.compile_to_bytecode().unwrap();
-        let instructions = assembly.opcodes::<8, EncodingModeProduction>();
+        let instructions = assembly.opcodes::<8, EncodingModeProduction>().unwrap();
         dbg!(&instructions);
     }
 }
